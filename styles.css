@@ -1,0 +1,25 @@
+/* Shared styles for the attendee and staff pages. ISL brand: navy #181e2b, blue #30607b, green #0b7a75, gold #f5cb3c, Montserrat. */
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: #f3f5f7; font-family: Montserrat, Arial, sans-serif; color: #181e2b; }
+button, input, select { font-family: inherit; }
+:focus-visible { outline: 3px solid #f5cb3c; outline-offset: 2px; }
+
+.brand { font-size: 12px; font-weight: 700; letter-spacing: 2px; color: #f5cb3c; }
+.sub { margin-top: 6px; font-size: 14px; font-weight: 500; color: #fff; }
+h1 { margin: 0; font-size: 28px; font-weight: 800; line-height: 1.15; }
+p { margin: 0; font-size: 15px; line-height: 1.5; color: #3d4556; }
+.muted { font-size: 13px; color: #3d4556; }
+.lbl { font-size: 13px; font-weight: 700; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); border: 0; }
+
+.field { height: 54px; width: 100%; border: 2px solid #30607b; border-radius: 12px; padding: 0 16px; font-size: 16px; background: #fff; color: #181e2b; }
+.btn { height: 56px; width: 100%; border: 0; border-radius: 12px; font-size: 16px; font-weight: 800; cursor: pointer; }
+.btn-gold { background: #f5cb3c; color: #181e2b; }
+.btn-green { background: #0b7a75; color: #fff; }
+.btn:disabled { opacity: .6; cursor: default; }
+.btn-ghost { height: 48px; border: 0; background: transparent; color: #30607b; font-size: 15px; font-weight: 700; cursor: pointer; }
+
+.err { font-size: 13px; font-weight: 600; color: #b4441c; }
+.banner { padding: 14px 16px; border-radius: 12px; background: #fbe4dc; color: #7a2a10; font-size: 14px; font-weight: 600; line-height: 1.4; }

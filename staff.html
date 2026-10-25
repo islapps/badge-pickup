@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Badge Pickup · Staff</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .wrap { max-width: 520px; margin: 0 auto; min-height: 100vh; }
+  header { background: #181e2b; padding: 20px; display: flex; flex-direction: column; gap: 14px; position: sticky; top: 0; z-index: 5; }
+  .title { font-size: 22px; font-weight: 800; color: #fff; margin-top: 4px; }
+  .seg { display: flex; gap: 6px; }
+  .seg button { flex: 1; height: 44px; border: 1px solid #5d6a80; border-radius: 10px; background: transparent; color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: #f5cb3c; border-color: #f5cb3c; color: #181e2b; font-weight: 800; }
+  .prog-row { display: flex; justify-content: space-between; font-size: 13px; color: #fff; }
+  .bar { height: 8px; border-radius: 4px; background: #3a4357; margin-top: 6px; }
+  .bar div { height: 8px; border-radius: 4px; background: #f5cb3c; width: 0; transition: width .3s; }
+  .tools { padding: 16px 20px 8px; display: flex; flex-direction: column; gap: 12px; }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chips button { height: 40px; padding: 0 14px; border: 1px solid #c5ccd6; border-radius: 20px; background: #fff; color: #181e2b; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .chips button[aria-pressed="true"] { background: #181e2b; border-color: #181e2b; color: #fff; font-weight: 700; }
+  .list { padding: 8px 20px 40px; display: flex; flex-direction: column; gap: 10px; }
+  .row { background: #fff; border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .row .ao { font-size: 16px; font-weight: 800; }
+  .row .det { font-size: 12px; color: #3d4556; margin-top: 3px; }
+  .hand { flex: none; height: 44px; padding: 0 14px; border: 0; border-radius: 10px; background: #181e2b; color: #fff; font-size: 13px; font-weight: 700; cursor: pointer; }
+  .done { flex: none; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+  .pill { padding: 8px 12px; border-radius: 18px; background: #e3f2f1; color: #0b5f5b; font-size: 12px; font-weight: 700; }
+  .undo { border: 0; background: transparent; color: #30607b; font-size: 12px; font-weight: 600; cursor: pointer; padding: 8px; min-height: 36px; }
+  .empty { text-align: center; color: #3d4556; font-size: 14px; padding: 30px 0; }
+  .pin { padding: 40px 24px; display: flex; flex-direction: column; gap: 12px; }
+  .pin h1 { margin-bottom: 8px; font-size: 26px; }
+  .pin .field { font-size: 20px; letter-spacing: 4px; }
+  .scrim { position: fixed; inset: 0; background: rgba(24,30,43,.6); display: flex; align-items: flex-end; justify-content: center; z-index: 10; }
+  .sheet { background: #fff; width: 100%; max-width: 520px; border-radius: 24px 24px 0 0; padding: 20px 24px 32px; display: flex; flex-direction: column; gap: 18px; max-height: 90vh; overflow-y: auto; }
+  .sheet h2 { margin: 4px 0 0; font-size: 24px; font-weight: 800; }
+  .members { background: #f3f5f7; border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; font-size: 14px; }
+  .members .tot { border-top: 1px solid #dde2e8; padding-top: 8px; font-weight: 700; }
+  select.field { font-size: 15px; padding: 0 12px; }
+  .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); max-width: 480px; width: calc(100% - 40px); z-index: 20; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- PIN gate -->
+  <form class="pin" id="pin-form" novalidate>
+    <div class="brand" style="color:#30607b">STAFF VIEW · <span data-event></span></div>
+    <h1>Enter staff PIN</h1>
+    <label class="lbl" for="pin">PIN</label>
+    <input class="field" id="pin" type="password" inputmode="numeric" autocomplete="off" maxlength="64">
+    <div class="err" id="pin-err" role="alert" hidden></div>
+    <button class="btn btn-gold" id="pin-btn" type="submit">Open</button>
+  </form>
+
+  <!-- Main staff view -->
+  <div id="main" hidden>
+    <header>
+      <div>
+        <div class="brand">STAFF VIEW</div>
+        <div class="title" id="title">All booths</div>
+      </div>
+      <div class="seg" id="booths" role="group" aria-label="Booth">
+        <button type="button" data-booth="1" aria-pressed="false">Booth 1</button>
+        <button type="button" data-booth="2" aria-pressed="false">Booth 2</button>
+        <button type="button" data-booth="all" aria-pressed="true">All</button>
+      </div>
+      <div>
+        <div class="prog-row"><span id="prog-text"></span><span id="prog-pct" style="font-weight:700"></span></div>
+        <div class="bar"><div id="prog-bar"></div></div>
+      </div>
+    </header>
+    <div class="tools">
+      <label for="search" class="sr-only">Search agency owner or attendee</label>
+      <input id="search" class="field" type="search" placeholder="Search agency owner or attendee" style="height:50px;font-size:15px">
+      <div class="chips" id="chips" role="group" aria-label="Filter">
+        <button type="button" data-f="all" aria-pressed="true">All</button>
+        <button type="button" data-f="waiting" aria-pressed="false">Waiting</button>
+        <button type="button" data-f="picked" aria-pressed="false">Picked up</button>
+      </div>
+    </div>
+    <div class="list" id="list"></div>
+  </div>
+
+  <!-- Confirm sheet -->
+  <div class="scrim" id="scrim" hidden>
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sh-ao">
+      <div>
+        <div class="muted" style="font-size:12px;font-weight:700;letter-spacing:1px" id="sh-kicker"></div>
+        <h2 id="sh-ao"></h2>
+      </div>
+      <div>
+        <div class="lbl" style="margin-bottom:8px">In this packet</div>
+        <div class="members" id="sh-members"></div>
+      </div>
+      <div>
+        <label class="lbl" for="sh-who">Who's picking it up?</label>
+        <select class="field" id="sh-who" style="margin-top:8px"></select>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <button class="btn btn-green" id="sh-confirm" type="button">Confirm pickup</button>
+        <button class="btn-ghost" id="sh-cancel" type="button">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="banner toast" id="toast" role="alert" hidden></div>
+</div>
+
+<script src="config.js"></script>
+<script>
+  var CFG = window.BADGE_CONFIG;
+  var TOKEN = '';
+  var DATA = [];
+  var booth = 'all';
+  var filter = 'all';
+  var current = null;
+  var saving = false;
+
+  function $(id) { return document.getElementById(id); }
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  function store(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} }
+  function recall(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function badges(n) { return n + (n === 1 ? ' badge' : ' badges'); }
+
+  document.querySelectorAll('[data-event]').forEach(function (n) { n.textContent = CFG.EVENT_NAME; });
+
+  var toastTimer = null;
+  function toast(msg) {
+    var t = $('toast');
+    t.textContent = msg;
+    t.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.hidden = true; }, 5000);
+  }
+
+  function showPin(msg) {
+    TOKEN = '';
+    store('badgeToken', null);
+    closeSheet();
+    $('main').hidden = true;
+    $('pin-form').hidden = false;
+    $('pin-btn').disabled = false;
+    $('pin-btn').textContent = 'Open';
+    $('pin-err').textContent = msg || '';
+    $('pin-err').hidden = !msg;
+  }
+
+  // Calls the backend; sends staff back to the PIN screen if their session ended.
+  function call(action, payload) {
+    return badgeApi(action, payload).catch(function (err) {
+      if (err.code === 'auth') showPin('Signed out. Enter the PIN again.');
+      else if (err.code === 'locked') showPin(err.message);
+      else toast(err.message);
+      throw err;
+    });
+  }
+
+  function loaded(res) {
+    DATA = res.groups;
+    $('pin-form').hidden = true;
+    $('main').hidden = false;
+    draw();
+  }
+
+  function inBooth(g) { return booth === 'all' || String(g.booth) === booth; }
+
+  function draw() {
+    var scoped = DATA.filter(inBooth);
+    var picked = scoped.filter(function (g) { return g.picked; }).length;
+    var pct = scoped.length ? Math.round(picked / scoped.length * 100) : 0;
+    $('title').textContent = booth === 'all' ? 'All booths' : 'Booth ' + booth;
+    $('prog-text').textContent = picked + ' of ' + scoped.length + ' groups picked up';
+    $('prog-pct').textContent = pct + '%';
+    $('prog-bar').style.width = pct + '%';
+
+    var q = $('search').value.trim().toLowerCase();
+    var rows = scoped.filter(function (g) {
+      if (filter === 'waiting' && g.picked) return false;
+      if (filter === 'picked' && !g.picked) return false;
+      if (!q) return true;
+      if (g.ao.toLowerCase().indexOf(q) !== -1) return true;
+      return g.members.some(function (m) { return m.toLowerCase().indexOf(q) !== -1; });
+    });
+
+    var list = $('list');
+    list.innerHTML = '';
+    if (!rows.length) { list.appendChild(el('div', 'empty', 'No groups match.')); return; }
+
+    rows.forEach(function (g) {
+      var row = el('div', 'row');
+      var left = el('div');
+      left.style.minWidth = '0';
+      left.appendChild(el('div', 'ao', g.ao));
+      var det = badges(g.members.length);
+      if (booth === 'all') det += ' · Booth ' + g.booth;
+      left.appendChild(el('div', 'det', det));
+      row.appendChild(left);
+
+      if (g.picked) {
+        var d = el('div', 'done');
+        d.appendChild(el('div', 'pill', '✓ ' + (g.pickedAt || 'Picked up') + (g.pickedBy ? ' · ' + g.pickedBy.split(' ')[0] : '')));
+        var u = el('button', 'undo', 'Undo');
+        u.type = 'button';
+        u.setAttribute('aria-label', 'Undo pickup for ' + g.ao);
+        u.addEventListener('click', function () {
+          if (!confirm('Mark ' + g.ao + "'s group as NOT picked up?")) return;
+          call('undo', { cred: TOKEN, key: g.key }).then(loaded, function () {});
+        });
+        d.appendChild(u);
+        row.appendChild(d);
+      } else {
+        var b = el('button', 'hand', 'Hand out');
+        b.type = 'button';
+        b.setAttribute('aria-label', 'Hand out packet for ' + g.ao);
+        b.addEventListener('click', function () { openSheet(g); });
+        row.appendChild(b);
+      }
+      list.appendChild(row);
+    });
+  }
+
+  function openSheet(g) {
+    current = g;
+    $('sh-kicker').textContent = 'HAND OUT PACKET · BOOTH ' + g.booth;
+    $('sh-ao').textContent = g.ao;
+    var mem = $('sh-members');
+    mem.innerHTML = '';
+    g.members.forEach(function (m) { mem.appendChild(el('div', null, m)); });
+    mem.appendChild(el('div', 'tot', badges(g.members.length)));
+    var sel = $('sh-who');
+    sel.innerHTML = '';
+    var first = el('option', null, 'Select a name');
+    first.value = '';
+    sel.appendChild(first);
+    g.members.forEach(function (m) { var o = el('option', null, m); o.value = m; sel.appendChild(o); });
+    if (g.members.indexOf(g.ao) === -1) { var o2 = el('option', null, g.ao + ' (agency owner)'); o2.value = g.ao; sel.appendChild(o2); }
+    $('sh-confirm').disabled = false;
+    $('sh-confirm').textContent = 'Confirm pickup';
+    $('scrim').hidden = false;
+    sel.focus();
+  }
+
+  function closeSheet() { $('scrim').hidden = true; current = null; saving = false; }
+
+  $('sh-cancel').addEventListener('click', closeSheet);
+  $('scrim').addEventListener('click', function (e) { if (e.target === $('scrim')) closeSheet(); });
+  $('sh-confirm').addEventListener('click', function () {
+    if (!current || saving) return;
+    var who = $('sh-who').value;
+    if (!who && !confirm('No name selected. Mark picked up anyway?')) return;
+    saving = true;
+    $('sh-confirm').disabled = true;
+    $('sh-confirm').textContent = 'Saving…';
+    call('markPicked', { cred: TOKEN, key: current.key, pickedBy: who }).then(function (res) {
+      closeSheet();
+      loaded(res);
+    }, function () {
+      saving = false;
+      $('sh-confirm').disabled = false;
+      $('sh-confirm').textContent = 'Confirm pickup';
+    });
+  });
+
+  $('pin-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var pin = $('pin').value.trim();
+    if (!pin) { $('pin').focus(); return; }
+    $('pin-btn').disabled = true;
+    $('pin-btn').textContent = 'Checking…';
+    $('pin-err').hidden = true;
+    badgeApi('login', { pin: pin })
+      .then(function (r) {
+        TOKEN = r.token;
+        store('badgeToken', TOKEN);
+        $('pin').value = '';
+        return badgeApi('staffLoad', { cred: TOKEN });
+      })
+      .then(loaded, function (err) {
+        var msg = err.code === 'auth' ? 'Wrong PIN.' : err.message;
+        showPin(msg);
+      });
+  });
+
+  function setPressed(groupId, attr, value) {
+    document.querySelectorAll('#' + groupId + ' button').forEach(function (x) {
+      x.setAttribute('aria-pressed', String(x.getAttribute(attr) === value));
+    });
+  }
+
+  document.querySelectorAll('#booths button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      booth = b.getAttribute('data-booth');
+      store('badgeBooth', booth);
+      setPressed('booths', 'data-booth', booth);
+      draw();
+    });
+  });
+
+  document.querySelectorAll('#chips button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      filter = b.getAttribute('data-f');
+      setPressed('chips', 'data-f', filter);
+      draw();
+    });
+  });
+
+  $('search').addEventListener('input', draw);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && current) closeSheet(); });
+
+  // Keep every staff phone in sync: refresh every 20 seconds (skipped while the confirm sheet is open).
+  setInterval(function () {
+    if (TOKEN && !current && !document.hidden) badgeApi('staffLoad', { cred: TOKEN }).then(loaded, function (err) {
+      if (err.code === 'auth') showPin('Signed out. Enter the PIN again.');
+    });
+  }, 20000);
+
+  // Pick up where this phone left off (booth choice and sign-in).
+  (function init() {
+    var savedBooth = recall('badgeBooth');
+    if (savedBooth) { booth = savedBooth; setPressed('booths', 'data-booth', booth); }
+    var saved = recall('badgeToken');
+    if (saved) {
+      TOKEN = saved;
+      $('pin-form').hidden = true;
+      call('staffLoad', { cred: TOKEN }).then(loaded, function (err) {
+        if (err.code !== 'auth' && err.code !== 'locked') showPin('Could not connect. Check your signal, then enter the PIN.');
+      });
+    }
+  })();
+</script>
+</body>
+</html>

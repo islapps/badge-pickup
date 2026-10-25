@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Badge Pickup · Insurance Sales Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .wrap { max-width: 440px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
+  header { background: #181e2b; padding: 24px; }
+  main { flex: 1; padding: 28px 24px; }
+  section { display: flex; flex-direction: column; gap: 20px; }
+  form { display: flex; flex-direction: column; gap: 10px; }
+  .card { background: #fff; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+  .kicker { font-size: 12px; font-weight: 700; letter-spacing: 1px; color: #3d4556; }
+  .big-name { font-size: 26px; font-weight: 800; }
+  .rule { height: 1px; background: #e2e6eb; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .val { font-size: 15px; font-weight: 700; margin-top: 2px; }
+  .booth { background: #0b7a75; color: #fff; border-radius: 20px; padding: 28px 24px; text-align: center; }
+  .booth .go { font-size: 14px; font-weight: 600; letter-spacing: 1px; }
+  .booth .num { font-size: 64px; font-weight: 800; line-height: 1; margin-top: 4px; }
+  .ok { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 700; color: #0b7a75; }
+  .note { padding: 16px; border-radius: 12px; background: #fdf3cf; font-size: 14px; line-height: 1.5; font-weight: 600; }
+  .gold { background: #f5cb3c; border-radius: 20px; padding: 28px 24px; display: flex; flex-direction: column; gap: 12px; }
+  .gold p { color: #181e2b; font-weight: 600; }
+  .help { background: #30607b; color: #fff; border-radius: 16px; padding: 20px; }
+  .help p { color: #fff; margin-top: 6px; }
+  .match { text-align: left; background: #fff; border: 2px solid #e2e6eb; border-radius: 12px; padding: 14px 16px; font-size: 15px; color: #181e2b; cursor: pointer; width: 100%; }
+  .match strong { display: block; font-weight: 800; }
+  .match span { font-size: 13px; color: #3d4556; }
+  footer { padding: 20px 24px 32px; font-size: 13px; line-height: 1.5; color: #3d4556; text-align: center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">INSURANCE SALES LAB</div>
+    <div class="sub"><span data-event></span> · Badge pickup</div>
+  </header>
+  <main>
+    <div class="banner" id="net-err" role="alert" hidden style="margin-bottom:20px"></div>
+
+    <!-- 1. Enter email -->
+    <section id="s-form">
+      <div>
+        <h1>Find your badge</h1>
+        <p style="margin-top:10px">Enter the email you registered with. We'll tell you exactly which booth to go to.</p>
+      </div>
+      <form id="email-form" novalidate>
+        <label class="lbl" for="email">Email</label>
+        <input class="field" id="email" type="email" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" placeholder="you@agency.com" maxlength="254">
+        <button class="btn btn-gold" id="email-btn" type="submit" style="margin-top:8px">Find my booth</button>
+      </form>
+      <p class="muted">Badges are grouped under the agency owner who booked your tickets, so your whole team goes to the same booth.</p>
+    </section>
+
+    <!-- 2. Go to booth -->
+    <section id="s-go" hidden>
+      <div class="ok">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0b7a75" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m8 12 3 3 5-6"/></svg>
+        <span>You're confirmed, <span id="go-first"></span></span>
+      </div>
+      <div class="booth"><div class="go">GO TO</div><div class="num" id="go-booth"></div></div>
+      <div class="card">
+        <div>
+          <div class="kicker">YOUR BADGE IS UNDER</div>
+          <div class="big-name" id="go-ao"></div>
+          <div class="muted">Agency owner who booked your group</div>
+        </div>
+        <div class="rule"></div>
+        <div class="grid2">
+          <div><div class="muted">Attendee</div><div class="val" id="go-attendee"></div></div>
+          <div><div class="muted">Group size</div><div class="val" id="go-size"></div></div>
+        </div>
+      </div>
+      <div class="note">Show this screen to the team member at the booth. You'll pick up badges for your whole group.</div>
+      <button class="btn-ghost" type="button" data-restart>Not you? Start over</button>
+    </section>
+
+    <!-- 3. Already picked up -->
+    <section id="s-picked" hidden>
+      <div class="gold">
+        <h1>Your group's badges are already picked up!</h1>
+        <p>Get with your team for your badge. No need to wait in line.</p>
+      </div>
+      <div class="card">
+        <div>
+          <div class="muted">Picked up by</div>
+          <div class="big-name" id="pk-by" style="font-size:20px"></div>
+          <div class="muted" id="pk-at"></div>
+        </div>
+        <div class="rule"></div>
+        <div><div class="muted">Your group</div><div class="val" id="pk-group"></div></div>
+      </div>
+      <p class="muted" style="text-align:center">Can't find your team? Go to <strong id="pk-booth" style="color:#181e2b"></strong> and show this screen.</p>
+      <button class="btn-ghost" type="button" data-restart>Not you? Start over</button>
+    </section>
+
+    <!-- 4. Not found -->
+    <section id="s-notfound" hidden>
+      <div>
+        <h1>We couldn't find that email</h1>
+        <p style="margin-top:10px">Check the spelling, or search by your first and last name instead.</p>
+      </div>
+      <form id="name-form" novalidate>
+        <label class="lbl" for="name">Your first and last name</label>
+        <input class="field" id="name" type="text" autocomplete="name" placeholder="Jane Smith" maxlength="100">
+        <div class="err" id="name-err" role="alert" hidden></div>
+        <button class="btn btn-gold" id="name-btn" type="submit" style="margin-top:8px">Search by name</button>
+      </form>
+      <button class="btn-ghost" type="button" data-restart>Try a different email</button>
+      <div class="help">
+        <strong>Still stuck?</strong>
+        <p>Go to <strong>Booth <span data-help></span></strong>, our help desk. We'll look you up by your name or your agency owner's name.</p>
+      </div>
+    </section>
+
+    <!-- 5. A few name matches -->
+    <section id="s-matches" hidden>
+      <div>
+        <h1>Which one is you?</h1>
+        <p style="margin-top:10px">Tap your name.</p>
+      </div>
+      <div id="match-list" style="display:flex;flex-direction:column;gap:10px"></div>
+      <button class="btn-ghost" type="button" data-restart>Start over</button>
+    </section>
+  </main>
+  <footer id="foot">Trouble? Go to <strong style="color:#181e2b">Booth <span data-help></span></strong> and we'll look you up by name.</footer>
+</div>
+
+<script src="config.js"></script>
+<script>
+  var CFG = window.BADGE_CONFIG;
+  var SECTIONS = ['s-form', 's-go', 's-picked', 's-notfound', 's-matches'];
+  function $(id) { return document.getElementById(id); }
+
+  document.querySelectorAll('[data-event]').forEach(function (n) { n.textContent = CFG.EVENT_NAME; });
+  document.querySelectorAll('[data-help]').forEach(function (n) { n.textContent = CFG.HELP_BOOTH; });
+
+  function show(id) {
+    SECTIONS.forEach(function (s) { $(s).hidden = (s !== id); });
+    $('foot').hidden = (id !== 's-form');
+    $('net-err').hidden = true;
+    window.scrollTo(0, 0);
+  }
+
+  function busy(btn, on, label) {
+    btn.disabled = on;
+    btn.textContent = on ? 'Checking…' : label;
+  }
+  function idle() {
+    busy($('email-btn'), false, 'Find my booth');
+    busy($('name-btn'), false, 'Search by name');
+  }
+
+  function fail(err) {
+    idle();
+    var b = $('net-err');
+    b.textContent = (err && err.message) || 'Something went wrong. Try again.';
+    b.hidden = false;
+  }
+
+  function badges(n) { return n + (n === 1 ? ' badge' : ' badges'); }
+
+  function nameError(msg) {
+    $('name-err').textContent = msg;
+    $('name-err').hidden = false;
+  }
+
+  function render(r) {
+    idle();
+    if (r.status === 'go') {
+      $('go-first').textContent = r.firstName;
+      $('go-booth').textContent = 'BOOTH ' + r.booth;
+      $('go-ao').textContent = r.ao;
+      $('go-attendee').textContent = r.attendee;
+      $('go-size').textContent = badges(r.size);
+      show('s-go');
+    } else if (r.status === 'picked') {
+      $('pk-by').textContent = r.pickedBy || 'Someone in your group';
+      $('pk-at').textContent = 'at Booth ' + r.booth + (r.pickedAt ? ' · ' + r.pickedAt : '');
+      $('pk-group').textContent = r.ao + ' · ' + badges(r.size);
+      $('pk-booth').textContent = 'Booth ' + r.booth;
+      show('s-picked');
+    } else if (r.status === 'matches') {
+      var list = $('match-list');
+      list.innerHTML = '';
+      r.matches.forEach(function (m) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'match';
+        var s = document.createElement('strong');
+        s.textContent = m.attendee;
+        var sp = document.createElement('span');
+        sp.textContent = 'Group: ' + m.ao;
+        b.appendChild(s);
+        b.appendChild(sp);
+        b.addEventListener('click', function () { render(m); });
+        list.appendChild(b);
+      });
+      show('s-matches');
+    }
+  }
+
+  $('email-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var v = $('email').value.trim();
+    if (!v) { $('email').focus(); return; }
+    busy($('email-btn'), true);
+    badgeApi('lookupEmail', { email: v }).then(function (r) {
+      if (r.status === 'notfound') {
+        idle();
+        $('name-err').hidden = true;
+        show('s-notfound');
+        return;
+      }
+      render(r);
+    }, fail);
+  });
+
+  $('name-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var v = $('name').value.trim();
+    if (!v) { $('name').focus(); return; }
+    $('name-err').hidden = true;
+    busy($('name-btn'), true);
+    badgeApi('lookupName', { name: v }).then(function (r) {
+      idle();
+      if (r.status === 'needfull') return nameError('Enter your first and last name.');
+      if (r.status === 'toomany') return nameError('A few people match that. Type your full first and last name.');
+      if (r.status === 'notfound') return nameError("No match for that name either. Go to Booth " + CFG.HELP_BOOTH + " and we'll find you.");
+      render(r);
+    }, fail);
+  });
+
+  document.querySelectorAll('[data-restart]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      $('email').value = '';
+      $('name').value = '';
+      $('name-err').hidden = true;
+      show('s-form');
+    });
+  });
+</script>
+</body>
+</html>
