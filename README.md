@@ -2,8 +2,8 @@
 
 Self-serve badge lookup for Insurance Sales Lab events.
 
-- **Attendee page:** `https://rob261.github.io/badge-pickup/` — scan the QR code, enter your email, get your booth and the agency owner your badge is filed under.
-- **Staff page:** `https://rob261.github.io/badge-pickup/staff.html` — PIN-protected list of groups; mark a packet handed out, or undo.
+- **Attendee page:** `https://islapps.github.io/badge-pickup/` — scan the QR code, enter your email, get your booth and the agency owner your badge is filed under.
+- **Staff page:** `https://islapps.github.io/badge-pickup/staff.html` — PIN-protected list of groups; mark a packet handed out, or undo.
 
 ## How it fits together
 
