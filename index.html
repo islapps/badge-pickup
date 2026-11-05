@@ -36,6 +36,12 @@
   .match { text-align: left; background: #fff; border: 2px solid #e2e6eb; border-radius: 12px; padding: 14px 16px; font-size: 15px; color: #181e2b; cursor: pointer; width: 100%; }
   .match strong { display: block; font-weight: 800; }
   .match span { font-size: 13px; color: #3d4556; }
+  .booth-help { background: #30607b; }
+  .booth-sub { margin-top: 10px; font-size: 14px; font-weight: 600; }
+  .typed { font-size: 14px; word-break: break-all; }
+  .alt { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+  .alt form { margin-top: 6px; }
+  .btn-outline { background: #fff; color: #30607b; border: 2px solid #30607b; height: 52px; font-size: 15px; }
   footer { padding: 20px 24px 32px; font-size: 13px; line-height: 1.5; color: #3d4556; text-align: center; }
 </style>
 </head>
@@ -108,18 +114,22 @@
     <section id="s-notfound" hidden>
       <div>
         <h1>We couldn't find that email</h1>
-        <p style="margin-top:10px">Check the spelling, or search by your first and last name instead.</p>
+        <p class="typed" style="margin-top:8px">You entered <strong id="nf-email"></strong></p>
       </div>
-      <form id="name-form" novalidate>
-        <label class="lbl" for="name">Your first and last name</label>
-        <input class="field" id="name" type="text" autocomplete="name" placeholder="Jane Smith" maxlength="100">
-        <div class="err" id="name-err" role="alert" hidden></div>
-        <button class="btn btn-gold" id="name-btn" type="submit" style="margin-top:8px">Search by name</button>
-      </form>
-      <button class="btn-ghost" type="button" data-restart>Try a different email</button>
-      <div class="help">
-        <strong>Still stuck?</strong>
-        <p>Go to <strong>Booth <span data-help></span></strong>, our help desk. We'll look you up by your name or your agency owner's name.</p>
+      <div class="booth booth-help">
+        <div class="go">GO TO</div>
+        <div class="num">BOOTH <span data-help></span></div>
+        <div class="booth-sub">Our help desk will look you up by name.</div>
+      </div>
+      <div class="alt">
+        <button class="btn btn-outline" type="button" data-restart>Try a different email</button>
+        <button class="btn-ghost" type="button" id="name-toggle" aria-expanded="false" aria-controls="name-form">Or search by your name</button>
+        <form id="name-form" novalidate hidden>
+          <label class="lbl" for="name">Your first and last name</label>
+          <input class="field" id="name" type="text" autocomplete="name" placeholder="Jane Smith" maxlength="100">
+          <div class="err" id="name-err" role="alert" hidden></div>
+          <button class="btn btn-gold" id="name-btn" type="submit" style="margin-top:8px">Search by name</button>
+        </form>
       </div>
     </section>
 
@@ -219,6 +229,10 @@
       if (r.status === 'notfound') {
         idle();
         $('name-err').hidden = true;
+        $('nf-email').textContent = v;
+        $('name-form').hidden = true;
+        $('name-toggle').hidden = false;
+        $('name-toggle').setAttribute('aria-expanded', 'false');
         show('s-notfound');
         return;
       }
@@ -236,9 +250,16 @@
       idle();
       if (r.status === 'needfull') return nameError('Enter your first and last name.');
       if (r.status === 'toomany') return nameError('A few people match that. Type your full first and last name.');
-      if (r.status === 'notfound') return nameError("No match for that name either. Go to Booth " + CFG.HELP_BOOTH + " and we'll find you.");
+      if (r.status === 'notfound') return nameError('No match for that name either. Head to Booth ' + CFG.HELP_BOOTH + ' above.');
       render(r);
     }, fail);
+  });
+
+  $('name-toggle').addEventListener('click', function () {
+    $('name-form').hidden = false;
+    $('name-toggle').hidden = true;
+    $('name-toggle').setAttribute('aria-expanded', 'true');
+    $('name').focus();
   });
 
   document.querySelectorAll('[data-restart]').forEach(function (b) {
@@ -247,6 +268,7 @@
       $('name').value = '';
       $('name-err').hidden = true;
       show('s-form');
+      $('email').focus();
     });
   });
 </script>
