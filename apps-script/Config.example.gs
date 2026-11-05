@@ -6,7 +6,7 @@
  * GitHub file — the repo is public.
  */
 const CONFIG = {
-  EVENT_NAME: 'Double My Sales Bootcamp (CA)',  // header on the fallback Apps Script pages
+  EVENT_NAME: 'Double My Sales Bootcamp',  // header on the fallback Apps Script pages
   BOOTH_TABS: {                                 // sheet tab name -> booth number
     'Check-In Booth 1': 1,
     'Check-In Booth 2': 2,

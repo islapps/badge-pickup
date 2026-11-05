@@ -3,7 +3,7 @@ window.BADGE_CONFIG = {
   // The Apps Script web app URL (ends in /exec). Keep it the same by deploying
   // updates as a "New version" of the existing deployment, never a "New deployment".
   API_URL: 'https://script.google.com/macros/s/AKfycbxJ8S-v85HKiqBpxKFgx1keTICIdhhj2GsfpnQFjQL4nCEgdsAIlu4FMZpI6q0sanI/exec',
-  EVENT_NAME: 'Double My Sales Bootcamp (CA)',
+  EVENT_NAME: 'Double My Sales Bootcamp',
   HELP_BOOTH: 3,
 };
 

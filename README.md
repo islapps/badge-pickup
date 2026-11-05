@@ -1,4 +1,4 @@
-# Badge Pickup — Double My Sales Bootcamp (CA)
+# Badge Pickup — ISL events
 
 Self-serve badge lookup for Insurance Sales Lab events.
 
